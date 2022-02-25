@@ -6,6 +6,8 @@ import {
   onSnapshot,
   doc,
   addDoc,
+  query,
+  orderBy,
   collection,
   serverTimestamp,
 } from "@firebase/firestore";
@@ -26,8 +28,10 @@ function Modal() {
   const [isOpen, setIsOpen] = useRecoilState(modalState);
   const [postId, setPostId] = useRecoilState(postIdState);
   const [post, setPost] = useState();
-  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState("");
   const router = useRouter();
+
+  
 
   useEffect(
     () =>
@@ -41,7 +45,7 @@ function Modal() {
     e.preventDefault();
 
     await addDoc(collection(db, "posts", postId, "comments"), {
-      comment: comment,
+      comment: comments,
       username: session.user.name,
       tag: session.user.tag,
       userImg: session.user.image,
@@ -49,7 +53,7 @@ function Modal() {
     });
 
     setIsOpen(false);
-    setComment("");
+    setComments("");
 
     router.push(`/${postId}`);
   };
@@ -124,8 +128,8 @@ function Modal() {
                     />
                     <div className="flex-grow mt-2">
                       <textarea
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
+                        value={comments}
+                        onChange={(e) => setComments(e.target.value)}
                         placeholder="Tweet your reply"
                         rows="2"
                         className="bg-transparent outline-none text-[#d9d9d9] text-lg placeholder-gray-500 tracking-wide w-full min-h-[80px]"
@@ -153,7 +157,7 @@ function Modal() {
                           className="bg-[#1d9bf0] text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default"
                           type="submit"
                           onClick={sendComment}
-                          disabled={!comment.trim()}
+                          disabled={!comments.trim()}
                         >
                           Reply
                         </button>
